@@ -1,0 +1,8 @@
+{
+  "name": "telegraf",
+  "version": "1.0.0",
+  "main": "index.d.ts",
+  "globalDependencies": {
+    "node": "registry:dt/node#7.0.0+20170204020307"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@types/telegraf",
+  "version": "1.0.0",
+  "description": "Types for https://github.com/telegraf/telegraf",
+  "typings": "index.d.ts",
+  "author": {
+    "name": "Nikita Tokarchuk",
+    "email": "nikita@tokarch.uk",
+    "url": "http://mainnika.ru"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
