@@ -9,5 +9,11 @@
     "url": "http://mainnika.ru"
   },
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "telegraf": "^3.6.5",
+    "tslint": "^4.4.2",
+    "tslint-config-typings": "^0.3.1",
+    "typescript": "^2.1.5"
+  }
 }
