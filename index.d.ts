@@ -1,14 +1,30 @@
 import { Agent } from 'https';
+import { ServerResponse } from 'http';
+import { TlsOptions } from 'tls';
 
 declare class Telegraf {
 
+  static compose(middlewares: Telegraf.Middleware[]): Telegraf.Middleware;
+  static mount(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], middleware: Telegraf.Middleware): Telegraf.Middleware;
+  static hears(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
+  static action(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
+  static passThru(): Telegraf.Middleware;
+  static optional(test: any | ((ctx: Telegraf.Context) => boolean), middleware: Telegraf.Middleware): void;
+  static branch(test: any | ((ctx: Telegraf.Context) => boolean), trueMiddleware: Telegraf.Middleware, falseMiddleware: Telegraf.Middleware): void;
+
   constructor(token: string, options?: Telegraf.TelegrafOptions);
 
-  command(command: string, middleware: Telegraf.Middleware): void;
-  on(type: string, middleware: Telegraf.Middleware): void;
-  startPolling(): void;
-
-  // @todo:
+  use(middleware: Telegraf.Middleware): void;
+  on(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], ...middleware: Telegraf.Middleware[]): void;
+  hears(triggers: string[] | RegExp[] | Function, ...middleware: Telegraf.Middleware[]): void;
+  command(triggers: string[], ...middleware: Telegraf.Middleware[]): void;
+  action(triggers: string[] | RegExp[], ...middleware: Telegraf.Middleware[]): void;
+  gameQuery(...middleware: Telegraf.Middleware[]): void;
+  startPolling(timeout?: number, limit?: number, allowedUpdates?: string[]): void;
+  startWebhook(webhookPath: string, tlsOptions: TlsOptions | null, port: number, host?: string): void;
+  stop(): void;
+  webhookCallback(webhookPath: string): Function;
+  handleUpdate(rawUpdate: any, webhookResponse?: ServerResponse): void;
 }
 
 declare namespace Telegraf {
@@ -44,6 +60,36 @@ declare namespace Telegraf {
   interface Middleware {
     (ctx: any): void;
   }
+
+  type UpdateType = 'message'
+    | 'edited_message'
+    | 'callback_query'
+    | 'inline_query'
+    | 'chosen_inline_result'
+    | 'channel_post'
+    | 'edited_channel_post'
+    | 'text'
+    | 'audio'
+    | 'document'
+    | 'photo'
+    | 'sticker'
+    | 'video'
+    | 'voice'
+    | 'contact'
+    | 'location'
+    | 'venue'
+    | 'new_chat_member'
+    | 'left_chat_member'
+    | 'new_chat_title'
+    | 'new_chat_photo'
+    | 'delete_chat_photo'
+    | 'group_chat_created'
+    | 'supergroup_chat_created'
+    | 'channel_chat_created'
+    | 'migrate_to_chat_id'
+    | 'migrate_from_chat_id'
+    | 'pinned_message'
+    | 'game';
 
   interface AnswerInlineQueryExtra {
     cache_time: number;
