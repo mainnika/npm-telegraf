@@ -1,17 +1,30 @@
 import { Agent } from 'https';
 
-export interface TelegrafOptions {
+declare class Telegraf {
+
+  constructor(token: string, options?: Telegraf.TelegrafOptions);
+
+  command(command: string, middleware: Telegraf.Middleware): void;
+  on(type: string, middleware: Telegraf.Middleware): void;
+  startPolling(): void;
+
+  // @todo:
+}
+
+declare namespace Telegraf {
+
+  interface TelegrafOptions {
     telegram?: TelegramOptions;
     username?: string;
-}
+  }
 
-export interface TelegramOptions {
+  interface TelegramOptions {
     agent?: Agent;
     webhookReply?: boolean;
-}
+  }
 
-export interface Context {
-    telegram: Telegram;
+  interface Context {
+    telegram: Telegraf.Telegram;
     updateType: string;
     updateSubType: string;
     me: string;
@@ -26,21 +39,21 @@ export interface Context {
     // chat;
     // from;
     // match;
-}
+  }
 
-export interface Middleware {
+  interface Middleware {
     (ctx: any): void;
-}
+  }
 
-export interface AnswerInlineQueryExtra {
+  interface AnswerInlineQueryExtra {
     cache_time: number;
     is_personal: boolean;
     next_offset: string;
     switch_pm_text: string;
     switch_pm_parameter: string;
-}
+  }
 
-export type InlineQueryResultType = 'article'
+  type InlineQueryResultType = 'article'
     | 'photo'
     | 'gif'
     | 'mpeg4_gif'
@@ -61,11 +74,11 @@ export type InlineQueryResultType = 'article'
     | 'voice'
     | 'audio';
 
-export interface InlineQueryResult {
+  interface InlineQueryResult {
     type: InlineQueryResultType;
-}
+  }
 
-export interface InlineQueryResultArticle extends InlineQueryResult {
+  interface InlineQueryResultArticle extends InlineQueryResult {
     type: 'article';
     id: string;
     title: string;
@@ -77,9 +90,9 @@ export interface InlineQueryResultArticle extends InlineQueryResult {
     thumb_url?: string;
     thumb_width?: number;
     thumb_height?: number;
-}
+  }
 
-export interface InlineQueryResultPhoto extends InlineQueryResult {
+  interface InlineQueryResultPhoto extends InlineQueryResult {
     type: 'photo';
     id: string;
     photo_url: string;
@@ -91,9 +104,9 @@ export interface InlineQueryResultPhoto extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultGif extends InlineQueryResult {
+  interface InlineQueryResultGif extends InlineQueryResult {
     type: 'gif';
     id: string;
     gif_url: string;
@@ -104,9 +117,9 @@ export interface InlineQueryResultGif extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultMpeg4Gif extends InlineQueryResult {
+  interface InlineQueryResultMpeg4Gif extends InlineQueryResult {
     type: 'mpeg4_gif';
     id: string;
     mpeg4_url: string;
@@ -117,9 +130,9 @@ export interface InlineQueryResultMpeg4Gif extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultVideo extends InlineQueryResult {
+  interface InlineQueryResultVideo extends InlineQueryResult {
     type: 'video';
     id: string;
     video_url: string;
@@ -133,9 +146,9 @@ export interface InlineQueryResultVideo extends InlineQueryResult {
     description?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultAudio extends InlineQueryResult {
+  interface InlineQueryResultAudio extends InlineQueryResult {
     type: 'audio';
     id: string;
     audio_url: string;
@@ -145,9 +158,9 @@ export interface InlineQueryResultAudio extends InlineQueryResult {
     audio_duration?: number;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultVoice extends InlineQueryResult {
+  interface InlineQueryResultVoice extends InlineQueryResult {
     type: 'voice';
     id: string;
     voice_url: string;
@@ -156,9 +169,9 @@ export interface InlineQueryResultVoice extends InlineQueryResult {
     voice_duration?: number;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultDocument extends InlineQueryResult {
+  interface InlineQueryResultDocument extends InlineQueryResult {
     type: 'document';
     id: string;
     title: string;
@@ -171,9 +184,9 @@ export interface InlineQueryResultDocument extends InlineQueryResult {
     thumb_url?: string;
     thumb_width?: number;
     thumb_height?: number;
-}
+  }
 
-export interface InlineQueryResultLocation extends InlineQueryResult {
+  interface InlineQueryResultLocation extends InlineQueryResult {
     type: 'location';
     id: string;
     latitude: number;
@@ -184,9 +197,9 @@ export interface InlineQueryResultLocation extends InlineQueryResult {
     thumb_url?: string;
     thumb_width?: number;
     thumb_height?: number;
-}
+  }
 
-export interface InlineQueryResultVenue extends InlineQueryResult {
+  interface InlineQueryResultVenue extends InlineQueryResult {
     type: 'venue';
     id: string;
     latitude: number;
@@ -199,9 +212,9 @@ export interface InlineQueryResultVenue extends InlineQueryResult {
     thumb_url?: string;
     thumb_width?: number;
     thumb_height?: number;
-}
+  }
 
-export interface InlineQueryResultContact extends InlineQueryResult {
+  interface InlineQueryResultContact extends InlineQueryResult {
     type: 'contact';
     id: string;
     phone_number: string;
@@ -212,16 +225,16 @@ export interface InlineQueryResultContact extends InlineQueryResult {
     thumb_url?: string;
     thumb_width?: number;
     thumb_height?: number;
-}
+  }
 
-export interface InlineQueryResultGame extends InlineQueryResult {
+  interface InlineQueryResultGame extends InlineQueryResult {
     type: 'game';
     id: string;
     game_short_name: string;
     reply_markup?: InlineKeyboardMarkup;
-}
+  }
 
-export interface InlineQueryResultCachedPhoto extends InlineQueryResult {
+  interface InlineQueryResultCachedPhoto extends InlineQueryResult {
     type: 'photo';
     id: string;
     photo_file_id: string;
@@ -230,9 +243,9 @@ export interface InlineQueryResultCachedPhoto extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedGif extends InlineQueryResult {
+  interface InlineQueryResultCachedGif extends InlineQueryResult {
     type: 'gif';
     id: string;
     gif_file_id: string;
@@ -240,9 +253,9 @@ export interface InlineQueryResultCachedGif extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedMpeg4Gif extends InlineQueryResult {
+  interface InlineQueryResultCachedMpeg4Gif extends InlineQueryResult {
     type: 'mpeg4_gif';
     id: string;
     mpeg4_file_id: string;
@@ -250,17 +263,17 @@ export interface InlineQueryResultCachedMpeg4Gif extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedSticker extends InlineQueryResult {
+  interface InlineQueryResultCachedSticker extends InlineQueryResult {
     type: 'sticker';
     id: string;
     sticker_file_id: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedDocument extends InlineQueryResult {
+  interface InlineQueryResultCachedDocument extends InlineQueryResult {
     type: 'document';
     id: string;
     title: string;
@@ -269,9 +282,9 @@ export interface InlineQueryResultCachedDocument extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedVideo extends InlineQueryResult {
+  interface InlineQueryResultCachedVideo extends InlineQueryResult {
     type: 'video';
     id: string;
     video_file_id: string;
@@ -280,9 +293,9 @@ export interface InlineQueryResultCachedVideo extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedVoice extends InlineQueryResult {
+  interface InlineQueryResultCachedVoice extends InlineQueryResult {
     type: 'voice';
     id: string;
     voice_file_id: string;
@@ -290,59 +303,59 @@ export interface InlineQueryResultCachedVoice extends InlineQueryResult {
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InlineQueryResultCachedAudio extends InlineQueryResult {
+  interface InlineQueryResultCachedAudio extends InlineQueryResult {
     type: 'audio';
     id: string;
     audio_file_id: string;
     caption?: string;
     reply_markup?: InlineKeyboardMarkup;
     input_message_content?: InputMessageContent;
-}
+  }
 
-export interface InputMessageContent {
-}
+  interface InputMessageContent {
+  }
 
-export interface InputTextMessageContent extends InputMessageContent {
+  interface InputTextMessageContent extends InputMessageContent {
     message_text: string;
     parse_mode?: string;
     disable_web_page_preview?: boolean;
-}
+  }
 
-export interface InputLocationMessageContent extends InputMessageContent {
+  interface InputLocationMessageContent extends InputMessageContent {
     latitude: number;
     longitude: number;
-}
+  }
 
-export interface InputVenueMessageContent extends InputMessageContent {
+  interface InputVenueMessageContent extends InputMessageContent {
     latitude: number;
     longitude: number;
     title: string;
     address: string;
     foursquare_id?: string;
-}
+  }
 
-export interface InputContactMessageContent extends InputMessageContent {
+  interface InputContactMessageContent extends InputMessageContent {
     phone_number: string;
     first_name: string;
     last_name?: string;
-}
+  }
 
-export interface InlineKeyboardMarkup {
+  interface InlineKeyboardMarkup {
     inline_keyboard: InlineKeyboardButton[][];
-}
+  }
 
-export interface InlineKeyboardButton {
+  interface InlineKeyboardButton {
     text: string;
     url?: string;
     callback_data?: string;
     switch_inline_query?: string;
     switch_inline_query_current_chat?: string;
     callback_game?: CallbackGame;
-}
+  }
 
-export interface CallbackGame {
+  interface CallbackGame {
     user_id: number;
     score: number;
     force?: boolean;
@@ -350,38 +363,27 @@ export interface CallbackGame {
     chat_id?: number;
     message_id?: number;
     inline_message_id?: string;
-}
+  }
 
-export interface EditMessageCaptionExtra {
+  interface EditMessageCaptionExtra {
     reply_markup?: InlineKeyboardMarkup;
-}
+  }
 
-export interface EditMessageReplyMarkupExtra {
+  interface EditMessageReplyMarkupExtra {
     reply_markup?: InlineKeyboardMarkup;
-}
+  }
 
-export interface EditMessageTextExtra {
+  interface EditMessageTextExtra {
     parse_mode?: string;
     disable_web_page_preview?: boolean;
     reply_markup?: InlineKeyboardMarkup;
-}
+  }
 
-export interface ForwardMessageExtra {
+  interface ForwardMessageExtra {
     disable_notification?: boolean;
-}
+  }
 
-export class Telegraf {
-
-    constructor(token: string, options?: TelegrafOptions);
-
-    command(command: string, middleware: Middleware): void;
-    on(type: string, middleware: Middleware): void;
-    startPolling(): void;
-
-    // @todo:
-}
-
-export class Telegram {
+  class Telegram {
 
     webhookReply: boolean;
 
@@ -397,4 +399,7 @@ export class Telegram {
     forwardMessage(chatId: number | string, fromChatId: number | string, messageId: number, extra?: ForwardMessageExtra): Promise<void>;
 
     // @todo:
+  }
 }
+
+export = Telegraf;

@@ -1,8 +1,7 @@
 /// <reference path="bundle.d.ts" />
 
-import { Telegraf, Telegram } from 'telegraf';
+import { Telegram } from 'telegraf';
+import * as Telegraf from 'telegraf';
 
-let q = new Telegram('FOOBAR');
-
-
+new Telegraf('token');
 
