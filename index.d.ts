@@ -401,6 +401,29 @@ declare namespace Telegraf {
     callback_game?: CallbackGame;
   }
 
+  interface ReplyKeyboardMarkup {
+    keyboard: KeyboardButton[];
+    resize_keyboard?: boolean;
+    one_time_keyboard?: boolean;
+    selective?: boolean;
+  }
+
+  interface KeyboardButton {
+    text: string;
+    request_contact?: boolean;
+    request_location?: boolean;
+  }
+
+  interface ReplyKeyboardRemove {
+    remove_keyboard: true;
+    selective?: boolean;
+  }
+
+  interface ForceReply {
+    force_reply: true;
+    selective?: boolean;
+  }
+
   interface CallbackGame {
     user_id: number;
     score: number;
@@ -429,20 +452,243 @@ declare namespace Telegraf {
     disable_notification?: boolean;
   }
 
+  interface SendMessageExtra {
+    message_text: string;
+    parse_mode?: string;
+    disable_web_page_preview?: boolean;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface Message {
+    message_id: number;
+    date: number;
+    chat: Chat;
+    from?: User;
+    forward_from?: User;
+    forward_from_chat?: Chat;
+    forward_from_message_id?: number;
+    forward_date?: number;
+    reply_to_message?: Message;
+    edit_date?: number;
+    text?: string;
+    entities?: MessageEntity[];
+    audio?: Audio;
+    document?: Document;
+    game?: Game;
+    photo?: PhotoSize[];
+    sticker?: Sticker;
+    video?: Video;
+    voice?: Voice;
+    caption?: string;
+    contact?: Contact;
+    location?: Location;
+    venue?: Venue;
+    new_chat_member?: User;
+    left_chat_member?: User;
+    new_chat_title?: string;
+    new_chat_photo?: PhotoSize[];
+    delete_chat_photo?: true;
+    group_chat_created?: true;
+    supergroup_chat_created?: true;
+    channel_chat_created?: true;
+    migrate_to_chat_id?: number;
+    migrate_from_chat_id?: number;
+    pinned_message?: Message;
+  }
+
+  interface User {
+    id: number;
+    first_name: string;
+    last_name?: string;
+    username?: string;
+  }
+
+  interface Chat {
+    id: number;
+    type: string;
+    title?: string;
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+    all_members_are_administrators?: boolean;
+  }
+
+  interface MessageEntity {
+    type: string;
+    offset: number;
+    length: number;
+    url?: string;
+    user?: User;
+  }
+
+  interface Audio {
+    file_id: string;
+    duration: number;
+    performer?: string;
+    title?: string;
+    mime_type?: string;
+    file_size?: number;
+  }
+
+  interface Document {
+    file_id: string;
+    thumb?: PhotoSize;
+    file_name?: string;
+    mime_type?: string;
+    file_size?: number;
+  }
+
+  interface Sticker {
+    file_id: string;
+    width: number;
+    height: number;
+    thumb?: PhotoSize;
+    emoji?: string;
+    file_size?: number;
+  }
+
+  interface PhotoSize {
+    file_id: string;
+    width: number;
+    height: number;
+    file_size?: number;
+  }
+
+  interface Video {
+    file_id: string;
+    width: number;
+    height: number;
+    duration: number;
+    thumb?: PhotoSize;
+    mime_type?: string;
+    file_size?: number;
+  }
+
+  interface Voice {
+    file_id: string;
+    duration: number;
+    mime_type?: string;
+    file_size?: number;
+  }
+
+  interface Contact {
+    phone_number: string;
+    first_name: string;
+    last_name?: string;
+    user_id?: number;
+  }
+
+  interface Location {
+    longitude?: number;
+    latitude?: number;
+  }
+
+  interface Venue {
+    location: Location;
+    title: string;
+    address: string;
+    foursquare_id?: string;
+  }
+
+  interface Game {
+    title: string;
+    description: string;
+    photo: PhotoSize[];
+    text?: string;
+    text_entities?: MessageEntity[];
+    animation?: Animation;
+  }
+
+  interface Animation {
+    file_id: string;
+    thumb?: PhotoSize;
+    file_name?: string;
+    mime_type?: string;
+    file_size?: number;
+  }
+
+  interface WebhookInfo {
+    url: string;
+    has_custom_certificate: boolean;
+    pending_update_count: number;
+    last_error_date?: number;
+    last_error_message?: string;
+    max_connections?: number;
+    allowed_updates?: string[];
+  }
+
+  interface ChatMember {
+    user: User;
+    status: ChatMemberStatus;
+  }
+
+  type ChatMemberStatus = 'creator' | 'administrator' | 'member' | 'left' | 'kicked';
+
+  interface GameHighScore {
+    position: number;
+    user: User;
+    score: number;
+  }
+
+  interface UserProfilePhotos {
+    total_count: number;
+    photos: PhotoSize[][];
+  }
+
+  interface SendAudioExtra {
+    chat_id: number | string;
+    audio: any | string;
+    caption?: string;
+    duration?: number;
+    performer?: string;
+    title?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendGameExtra {
+    chat_id: number;
+    game_short_name: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup;
+  }
+
+  type ChatAction = 'typing' | 'upload_photo' | 'upload_video' | 'upload_audio' | 'upload_document' | 'find_location';
+
   class Telegram {
 
     webhookReply: boolean;
 
     constructor(token: string, options?: TelegrafOptions);
 
-    answerCallbackQuery(callbackQueryId: string, text?: string, url?: string, showAlert?: boolean, cacheTime?: number): Promise<void>;
-    answerInlineQuery<T extends InlineQueryResult>(inlineQueryId: string, results: T[], extra?: AnswerInlineQueryExtra): Promise<void>;
-
-    editMessageCaption(chatId: number | string, messageId: string, inlineMessageId: string, caption: string, extra?: EditMessageCaptionExtra): Promise<void>;
-    editMessageReplyMarkup(chatId: number | string, messageId: string, inlineMessageId: string, markup: Object, extra?: EditMessageReplyMarkupExtra): Promise<void>;
-    editMessageText(chatId: number | string, messageId: string, inlineMessageId: string, text: string, extra?: EditMessageTextExtra): Promise<void>;
-
-    forwardMessage(chatId: number | string, fromChatId: number | string, messageId: number, extra?: ForwardMessageExtra): Promise<void>;
+    answerCallbackQuery(callbackQueryId: string, text?: string, url?: string, showAlert?: boolean, cacheTime?: number): Promise<true>;
+    answerInlineQuery<T extends InlineQueryResult>(inlineQueryId: string, results: T[], extra?: AnswerInlineQueryExtra): Promise<true>;
+    editMessageCaption(chatId: number | string, messageId: string, inlineMessageId: string, caption: string, extra?: EditMessageCaptionExtra): Promise<Message | true>;
+    editMessageReplyMarkup(chatId: number | string, messageId: string, inlineMessageId: string, markup: any, extra?: EditMessageReplyMarkupExtra): Promise<Message | true>;
+    editMessageText(chatId: number | string, messageId: string, inlineMessageId: string, text: string, extra?: EditMessageTextExtra): Promise<Message | true>;
+    forwardMessage(chatId: number | string, fromChatId: number | string, messageId: number, extra?: ForwardMessageExtra): Promise<Message>;
+    sendCopy(chatId: number | string, message: any, extra?: SendMessageExtra): Promise<Message>;
+    getWebhookInfo(): Promise<WebhookInfo>;
+    getChat(chatId: number | string): Promise<Chat>;
+    getChatAdministrators(chatId: number | string): Promise<ChatMember[]>;
+    setGameScore(userId: number, score: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string, editMessage?: boolean, force?: boolean): Promise<Message | true>;
+    getGameHighScores(userId: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string): Promise<GameHighScore[]>;
+    getChatMember(chatId: number | string, userId: number): Promise<ChatMember>;
+    getChatMembersCount(chatId: number | string): Promise<number>;
+    getFile(fileId: string): Promise<File>;
+    getFileLink(fileId: string): Promise<string>;
+    getMe(): Promise<User>;
+    getUserProfilePhotos(userId: number, offset?: number, limit?: number): Promise<UserProfilePhotos>;
+    kickChatMember(chatId: number | string, userId: number): Promise<true>;
+    leaveChat(chatId: number | string): Promise<true>;
+    deleteWebhook(): Promise<true>;
+    sendAudio(chatId: number | string, audio: File, extra?: SendAudioExtra): Promise<Message>;
+    sendGame(chatId: number | string, gameName: string, extra?: SendGameExtra): Promise<Message>;
+    sendChatAction(chatId: number | string, action: ChatAction): Promise<true>;
 
     // @todo:
   }
