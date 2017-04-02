@@ -4,30 +4,85 @@ import { TlsOptions } from 'tls';
 
 declare class Telegraf {
 
-  static compose(middlewares: Telegraf.Middleware[]): Telegraf.Middleware;
-  static mount(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], middleware: Telegraf.Middleware): Telegraf.Middleware;
-  static hears(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
   static action(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
-  static passThru(): Telegraf.Middleware;
-  static optional(test: any | ((ctx: Telegraf.Context) => boolean), middleware: Telegraf.Middleware): void;
   static branch(test: any | ((ctx: Telegraf.Context) => boolean), trueMiddleware: Telegraf.Middleware, falseMiddleware: Telegraf.Middleware): void;
+  static compose(middlewares: Telegraf.Middleware[]): Telegraf.Middleware;
+  static hears(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
+  static mount(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], middleware: Telegraf.Middleware): Telegraf.Middleware;
+  static optional(test: any | ((ctx: Telegraf.Context) => boolean), middleware: Telegraf.Middleware): void;
+  static passThru(): Telegraf.Middleware;
 
   constructor(token: string, options?: Telegraf.TelegrafOptions);
 
-  use(middleware: Telegraf.Middleware): void;
-  on(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], ...middleware: Telegraf.Middleware[]): void;
-  hears(triggers: string[] | RegExp[] | Function, ...middleware: Telegraf.Middleware[]): void;
-  command(triggers: string[], ...middleware: Telegraf.Middleware[]): void;
   action(triggers: string[] | RegExp[], ...middleware: Telegraf.Middleware[]): void;
+  command(triggers: string[], ...middleware: Telegraf.Middleware[]): void;
   gameQuery(...middleware: Telegraf.Middleware[]): void;
+  handleUpdate(rawUpdate: any, webhookResponse?: ServerResponse): void;
+  hears(triggers: string[] | RegExp[] | Function, ...middleware: Telegraf.Middleware[]): void;
+  on(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], ...middleware: Telegraf.Middleware[]): void;
   startPolling(timeout?: number, limit?: number, allowedUpdates?: string[]): void;
   startWebhook(webhookPath: string, tlsOptions: TlsOptions | null, port: number, host?: string): void;
   stop(): void;
+  use(middleware: Telegraf.Middleware): void;
   webhookCallback(webhookPath: string): Function;
-  handleUpdate(rawUpdate: any, webhookResponse?: ServerResponse): void;
 }
 
 declare namespace Telegraf {
+
+  type UpdateType = 'audio'
+    | 'callback_query'
+    | 'channel_chat_created'
+    | 'channel_post'
+    | 'chosen_inline_result'
+    | 'contact'
+    | 'delete_chat_photo'
+    | 'document'
+    | 'edited_channel_post'
+    | 'edited_message'
+    | 'game'
+    | 'group_chat_created'
+    | 'inline_query'
+    | 'left_chat_member'
+    | 'location'
+    | 'message'
+    | 'migrate_from_chat_id'
+    | 'migrate_to_chat_id'
+    | 'new_chat_member'
+    | 'new_chat_photo'
+    | 'new_chat_title'
+    | 'photo'
+    | 'pinned_message'
+    | 'sticker'
+    | 'supergroup_chat_created'
+    | 'text'
+    | 'venue'
+    | 'video'
+    | 'voice';
+
+  type InlineQueryResultType = 'article'
+    | 'audio'
+    | 'audio'
+    | 'contact'
+    | 'document'
+    | 'document'
+    | 'game'
+    | 'gif'
+    | 'gif'
+    | 'location'
+    | 'mpeg4_gif'
+    | 'mpeg4_gif'
+    | 'photo'
+    | 'photo'
+    | 'sticker'
+    | 'venue'
+    | 'video'
+    | 'video'
+    | 'voice'
+    | 'voice';
+
+  type ChatMemberStatus = 'creator' | 'administrator' | 'member' | 'left' | 'kicked';
+
+  type ChatAction = 'typing' | 'upload_photo' | 'upload_video' | 'upload_audio' | 'upload_document' | 'find_location';
 
   interface TelegrafOptions {
     telegram?: TelegramOptions;
@@ -61,36 +116,6 @@ declare namespace Telegraf {
     (ctx: any): void;
   }
 
-  type UpdateType = 'message'
-    | 'edited_message'
-    | 'callback_query'
-    | 'inline_query'
-    | 'chosen_inline_result'
-    | 'channel_post'
-    | 'edited_channel_post'
-    | 'text'
-    | 'audio'
-    | 'document'
-    | 'photo'
-    | 'sticker'
-    | 'video'
-    | 'voice'
-    | 'contact'
-    | 'location'
-    | 'venue'
-    | 'new_chat_member'
-    | 'left_chat_member'
-    | 'new_chat_title'
-    | 'new_chat_photo'
-    | 'delete_chat_photo'
-    | 'group_chat_created'
-    | 'supergroup_chat_created'
-    | 'channel_chat_created'
-    | 'migrate_to_chat_id'
-    | 'migrate_from_chat_id'
-    | 'pinned_message'
-    | 'game';
-
   interface AnswerInlineQueryExtra {
     cache_time: number;
     is_personal: boolean;
@@ -98,27 +123,6 @@ declare namespace Telegraf {
     switch_pm_text: string;
     switch_pm_parameter: string;
   }
-
-  type InlineQueryResultType = 'article'
-    | 'photo'
-    | 'gif'
-    | 'mpeg4_gif'
-    | 'video'
-    | 'audio'
-    | 'voice'
-    | 'document'
-    | 'location'
-    | 'venue'
-    | 'contact'
-    | 'game'
-    | 'photo'
-    | 'gif'
-    | 'mpeg4_gif'
-    | 'sticker'
-    | 'document'
-    | 'video'
-    | 'voice'
-    | 'audio';
 
   interface InlineQueryResult {
     type: InlineQueryResultType;
@@ -624,8 +628,6 @@ declare namespace Telegraf {
     status: ChatMemberStatus;
   }
 
-  type ChatMemberStatus = 'creator' | 'administrator' | 'member' | 'left' | 'kicked';
-
   interface GameHighScore {
     position: number;
     user: User;
@@ -657,7 +659,63 @@ declare namespace Telegraf {
     reply_markup?: InlineKeyboardMarkup;
   }
 
-  type ChatAction = 'typing' | 'upload_photo' | 'upload_video' | 'upload_audio' | 'upload_document' | 'find_location';
+  interface SendContactExtra {
+    last_name?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendDocumentExtra {
+    caption?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendLocationExtra {
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendPhotoExtra {
+    caption?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendStickerExtra {
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendVenueExtra {
+    foursquare_id?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendVideoExtra {
+    duration?: number;
+    width?: number;
+    height?: number;
+    caption?: string;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
+
+  interface SendVoiceExtra {
+    caption?: string;
+    duration?: number;
+    disable_notification?: boolean;
+    reply_to_message_id?: number;
+    reply_markup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove | ForceReply;
+  }
 
   class Telegram {
 
@@ -667,30 +725,46 @@ declare namespace Telegraf {
 
     answerCallbackQuery(callbackQueryId: string, text?: string, url?: string, showAlert?: boolean, cacheTime?: number): Promise<true>;
     answerInlineQuery<T extends InlineQueryResult>(inlineQueryId: string, results: T[], extra?: AnswerInlineQueryExtra): Promise<true>;
+
+    forwardMessage(chatId: number | string, fromChatId: number | string, messageId: number, extra?: ForwardMessageExtra): Promise<Message>;
+
     editMessageCaption(chatId: number | string, messageId: string, inlineMessageId: string, caption: string, extra?: EditMessageCaptionExtra): Promise<Message | true>;
     editMessageReplyMarkup(chatId: number | string, messageId: string, inlineMessageId: string, markup: any, extra?: EditMessageReplyMarkupExtra): Promise<Message | true>;
     editMessageText(chatId: number | string, messageId: string, inlineMessageId: string, text: string, extra?: EditMessageTextExtra): Promise<Message | true>;
-    forwardMessage(chatId: number | string, fromChatId: number | string, messageId: number, extra?: ForwardMessageExtra): Promise<Message>;
-    sendCopy(chatId: number | string, message: any, extra?: SendMessageExtra): Promise<Message>;
-    getWebhookInfo(): Promise<WebhookInfo>;
+
     getChat(chatId: number | string): Promise<Chat>;
     getChatAdministrators(chatId: number | string): Promise<ChatMember[]>;
-    setGameScore(userId: number, score: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string, editMessage?: boolean, force?: boolean): Promise<Message | true>;
-    getGameHighScores(userId: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string): Promise<GameHighScore[]>;
     getChatMember(chatId: number | string, userId: number): Promise<ChatMember>;
     getChatMembersCount(chatId: number | string): Promise<number>;
     getFile(fileId: string): Promise<File>;
     getFileLink(fileId: string): Promise<string>;
+    getGameHighScores(userId: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string): Promise<GameHighScore[]>;
     getMe(): Promise<User>;
     getUserProfilePhotos(userId: number, offset?: number, limit?: number): Promise<UserProfilePhotos>;
-    kickChatMember(chatId: number | string, userId: number): Promise<true>;
-    leaveChat(chatId: number | string): Promise<true>;
-    deleteWebhook(): Promise<true>;
-    sendAudio(chatId: number | string, audio: File, extra?: SendAudioExtra): Promise<Message>;
-    sendGame(chatId: number | string, gameName: string, extra?: SendGameExtra): Promise<Message>;
-    sendChatAction(chatId: number | string, action: ChatAction): Promise<true>;
+    setGameScore(userId: number, score: number, inlineMessageId?: string, chatId?: number | string, messageId?: number | string, editMessage?: boolean, force?: boolean): Promise<Message | true>;
 
-    // @todo:
+    kickChatMember(chatId: number | string, userId: number): Promise<true>;
+    unbanChatMember(chatId: number | string, userId: number): Promise<true>;
+
+    leaveChat(chatId: number | string): Promise<true>;
+
+    deleteWebhook(): Promise<true>;
+    getWebhookInfo(): Promise<WebhookInfo>;
+    setWebhook(url: string, cert?: File, maxConnections?: number, allowedUpdates?: string[]): Promise<true>;
+
+    sendAudio(chatId: number | string, audio: File, extra?: SendAudioExtra): Promise<Message>;
+    sendChatAction(chatId: number | string, action: ChatAction): Promise<true>;
+    sendContact(chatId: number | string, phoneNumber: string, firstName: string, extra?: SendContactExtra): Promise<Message>;
+    sendCopy(chatId: number | string, message: Message, extra?: SendMessageExtra): Promise<Message>;
+    sendDocument(chatId: number | string, doc: File, extra?: SendDocumentExtra): Promise<Message>;
+    sendGame(chatId: number | string, gameName: string, extra?: SendGameExtra): Promise<Message>;
+    sendLocation(chatId: number | string, latitude: number, longitude: number, extra?: SendLocationExtra): Promise<Message>;
+    sendMessage(chatId: number | string, text: string, extra?: SendMessageExtra): Promise<Message>;
+    sendPhoto(chatId: number | string, photo: File, extra?: SendPhotoExtra): Promise<Message>;
+    sendSticker(chatId: number | string, sticker: File, extra?: SendStickerExtra): Promise<Message>;
+    sendVenue(chatId: number | string, latitude: number, longitude: number, title: string, address: string, extra?: SendVenueExtra): Promise<Message>;
+    sendVideo(chatId: number | string, video: File, extra?: SendVideoExtra): Promise<Message>;
+    sendVoice(chatId: number | string, voice: File, extra?: SendVoiceExtra): Promise<Message>;
   }
 }
 
