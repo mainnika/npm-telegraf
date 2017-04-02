@@ -8,7 +8,7 @@ declare class Telegraf {
   static branch(test: any | ((ctx: Telegraf.Context) => boolean), trueMiddleware: Telegraf.Middleware, falseMiddleware: Telegraf.Middleware): void;
   static compose(middlewares: Telegraf.Middleware[]): Telegraf.Middleware;
   static hears(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
-  static mount(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], middleware: Telegraf.Middleware): Telegraf.Middleware;
+  static mount(updateTypes: (Telegraf.UpdateType & Telegraf.UpdateSubType) | (Telegraf.UpdateType & Telegraf.UpdateSubType)[], middleware: Telegraf.Middleware): Telegraf.Middleware;
   static optional(test: any | ((ctx: Telegraf.Context) => boolean), middleware: Telegraf.Middleware): void;
   static passThru(): Telegraf.Middleware;
 
@@ -19,7 +19,7 @@ declare class Telegraf {
   gameQuery(...middleware: Telegraf.Middleware[]): void;
   handleUpdate(rawUpdate: any, webhookResponse?: ServerResponse): void;
   hears(triggers: string[] | RegExp[] | Function, ...middleware: Telegraf.Middleware[]): void;
-  on(updateTypes: Telegraf.UpdateType | Telegraf.UpdateType[], ...middleware: Telegraf.Middleware[]): void;
+  on(updateTypes: (Telegraf.UpdateType & Telegraf.UpdateSubType) | (Telegraf.UpdateType & Telegraf.UpdateSubType)[], ...middleware: Telegraf.Middleware[]): void;
   startPolling(timeout?: number, limit?: number, allowedUpdates?: string[]): void;
   startWebhook(webhookPath: string, tlsOptions: TlsOptions | null, port: number, host?: string): void;
   stop(): void;
@@ -29,22 +29,23 @@ declare class Telegraf {
 
 declare namespace Telegraf {
 
-  type UpdateType = 'audio'
-    | 'callback_query'
-    | 'channel_chat_created'
+  type UpdateType = 'callback_query'
     | 'channel_post'
     | 'chosen_inline_result'
+    | 'edited_channel_post'
+    | 'edited_message'
+    | 'inline_query'
+    | 'message';
+
+  type UpdateSubType = 'audio'
+    | 'channel_chat_created'
     | 'contact'
     | 'delete_chat_photo'
     | 'document'
-    | 'edited_channel_post'
-    | 'edited_message'
     | 'game'
     | 'group_chat_created'
-    | 'inline_query'
     | 'left_chat_member'
     | 'location'
-    | 'message'
     | 'migrate_from_chat_id'
     | 'migrate_to_chat_id'
     | 'new_chat_member'
@@ -57,7 +58,7 @@ declare namespace Telegraf {
     | 'text'
     | 'venue'
     | 'video'
-    | 'voice';
+    | 'voice'
 
   type InlineQueryResultType = 'article'
     | 'audio'
@@ -96,24 +97,61 @@ declare namespace Telegraf {
 
   interface Context {
     telegram: Telegraf.Telegram;
-    updateType: string;
-    updateSubType: string;
-    me: string;
-    message: string;
-    editedMessage: string;
-    // @todo:
-    // inlineQuery;
-    // chosenInlineResult;
-    // callbackQuery;
-    // channelPost;
-    // editedChannelPost;
-    // chat;
-    // from;
-    // match;
+    updateType: UpdateType;
+    updateSubType?: UpdateSubType;
+    me?: string;
+    message?: Message;
+    editedMessage?: Message;
+    inlineQuery?: InlineQuery;
+    chosenInlineResult?: InlineQueryResult;
+    callbackQuery?: CallbackQuery;
+    channelPost?: Message;
+    editedChannelPost?: Message;
+    chat?: Chat;
+    from?: User;
+    match?: RegExp;
+
+    answerCallbackQuery(text?: string, url?: string, showAlert?: boolean, cacheTime?: number): Promise<true>;
+    answerInlineQuery<T extends InlineQueryResult>(results: T[], extra?: AnswerInlineQueryExtra): Promise<true>;
+
+    editMessageCaption(messageId: string, inlineMessageId: string, caption: string, extra?: EditMessageCaptionExtra): Promise<Message | true>;
+    editMessageReplyMarkup(messageId: string, inlineMessageId: string, markup: any, extra?: EditMessageReplyMarkupExtra): Promise<Message | true>;
+    editMessageText(messageId: string, inlineMessageId: string, text: string, extra?: EditMessageTextExtra): Promise<Message | true>;
+
+    getChat(): Promise<Chat>;
+    getChatAdministrators(): Promise<ChatMember[]>;
+    getChatMember(userId: number): Promise<ChatMember>;
+    getChatMembersCount(): Promise<number>;
+
+    leaveChat(): Promise<true>;
+
+    reply(text: string, extra?: SendMessageExtra): Promise<Message>;
+    replyWithMarkdown(text: string, extra?: SendMessageExtra): Promise<Message>;
+    replyWithHTML(text: string, extra?: SendMessageExtra): Promise<Message>;
+
+    replyWithAudio(audio: File, extra?: SendAudioExtra): Promise<Message>;
+    replyWithChatAction(action: ChatAction): Promise<true>;
+    replyWithDocument(doc: File, extra?: SendDocumentExtra): Promise<Message>;
+    replyWithGame(gameName: string, extra?: SendGameExtra): Promise<Message>;
+    replyWithLocation(latitude: number, longitude: number, extra?: SendLocationExtra): Promise<Message>;
+    replyWithPhoto(photo: File, extra?: SendPhotoExtra): Promise<Message>;
+    replyWithSticker(sticker: File, extra?: SendStickerExtra): Promise<Message>;
+    replyWithVideo(video: File, extra?: SendVideoExtra): Promise<Message>;
+    replyWithVoice(voice: File, extra?: SendVoiceExtra): Promise<Message>;
   }
 
   interface Middleware {
-    (ctx: any): void;
+    (ctx: Context): void;
+  }
+
+  interface CallbackQuery {
+    id: string;
+    from: User;
+    chat_instance: string;
+    message?: Message;
+    inline_message_id?: string;
+    data?: string;
+    game_short_name?: string;
   }
 
   interface AnswerInlineQueryExtra {
@@ -122,6 +160,14 @@ declare namespace Telegraf {
     next_offset: string;
     switch_pm_text: string;
     switch_pm_parameter: string;
+  }
+
+  interface InlineQuery {
+    id: string;
+    from: User;
+    query: string;
+    offset: string;
+    location?: Location;
   }
 
   interface InlineQueryResult {
