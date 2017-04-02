@@ -8,7 +8,7 @@ declare class Telegraf {
   static branch(test: any | ((ctx: Telegraf.Context) => boolean), trueMiddleware: Telegraf.Middleware, falseMiddleware: Telegraf.Middleware): void;
   static compose(middlewares: Telegraf.Middleware[]): Telegraf.Middleware;
   static hears(triggers: string[] | RegExp[] | Function[], handler: Telegraf.Middleware): Telegraf.Middleware;
-  static mount(updateTypes: (Telegraf.UpdateType & Telegraf.UpdateSubType) | (Telegraf.UpdateType & Telegraf.UpdateSubType)[], middleware: Telegraf.Middleware): Telegraf.Middleware;
+  static mount(updateTypes: (Telegraf.UpdateType | Telegraf.UpdateSubType) | (Telegraf.UpdateType | Telegraf.UpdateSubType)[], middleware: Telegraf.Middleware): Telegraf.Middleware;
   static optional(test: any | ((ctx: Telegraf.Context) => boolean), middleware: Telegraf.Middleware): void;
   static passThru(): Telegraf.Middleware;
 
@@ -19,7 +19,7 @@ declare class Telegraf {
   gameQuery(...middleware: Telegraf.Middleware[]): void;
   handleUpdate(rawUpdate: any, webhookResponse?: ServerResponse): void;
   hears(triggers: string[] | RegExp[] | Function, ...middleware: Telegraf.Middleware[]): void;
-  on(updateTypes: (Telegraf.UpdateType & Telegraf.UpdateSubType) | (Telegraf.UpdateType & Telegraf.UpdateSubType)[], ...middleware: Telegraf.Middleware[]): void;
+  on(updateTypes: (Telegraf.UpdateType | Telegraf.UpdateSubType) | (Telegraf.UpdateType | Telegraf.UpdateSubType)[], ...middleware: Telegraf.Middleware[]): void;
   startPolling(timeout?: number, limit?: number, allowedUpdates?: string[]): void;
   startWebhook(webhookPath: string, tlsOptions: TlsOptions | null, port: number, host?: string): void;
   stop(): void;
@@ -58,7 +58,7 @@ declare namespace Telegraf {
     | 'text'
     | 'venue'
     | 'video'
-    | 'voice'
+    | 'voice';
 
   type InlineQueryResultType = 'article'
     | 'audio'
